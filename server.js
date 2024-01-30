@@ -118,11 +118,23 @@ const server = http.createServer((req, res) => {
     // Phase 3: GET /dogs/:dogId
     if (req.method === "GET" && req.url.startsWith("/dogs/")) {
       const urlParts = req.url.split("/");
+      let resBody;
       if (urlParts.length === 3) {
         const dogId = urlParts[2];
         const dog = dogs.find((dog) => dog.dogId === Number(dogId));
-        // Your code here
+        const dogDetailsHtmlPage = fs.readFileSync(
+          "./views/dog-details.html",
+          "utf-8"
+        );
+
+        resBody = dogDetailsHtmlPage
+          .replace(/#{name}/g, dog?.name)
+          .replace(/#{age}/g, dog?.age);
       }
+
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "text/html");
+      return res.end(resBody);
     }
 
     // Phase 4: POST /dogs
